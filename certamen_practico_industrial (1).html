@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Evaluación - Análisis Estadístico Multivariado</title>
+    <style>
+        :root {
+            --primary: #002f6c;
+            --primary-light: #1e56a0;
+            --accent: #f6921e;
+            --text-dark: #333333;
+            --text-light: #ffffff;
+            --bg-gray: #f4f6f9;
+            --card-bg: #ffffff;
+            --success: #28a745;
+            --danger: #dc3545;
+            --border: #dcdcdc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-gray);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: var(--text-light);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 5px solid var(--accent);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            padding: 30px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 20px;
+            border-left: 5px solid var(--accent);
+            padding-left: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-light);
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary);
+            color: var(--text-light);
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-light);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            color: var(--text-light);
+        }
+
+        .btn-accent:hover {
+            background-color: #e08113;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            background-color: #e9ecef;
+            height: 10px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background-color: var(--accent);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-text {
+            font-size: 17px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #111;
+        }
+
+        .code-block {
+            background-color: #272822;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            white-space: pre;
+        }
+
+        .options-container {
+            margin-top: 15px;
+        }
+
+        .option-card {
+            display: block;
+            background-color: #f8f9fa;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        .option-card:hover {
+            background-color: #f1f3f5;
+            border-color: #adb5bd;
+        }
+
+        .option-card input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+            vertical-align: middle;
+        }
+
+        .option-text {
+            display: inline-block;
+            vertical-align: middle;
+            width: 90%;
+            font-size: 15px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+
+        .diagnostic-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        @media (min-width: 768px) {
+            .diagnostic-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .metric-box {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 20px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .metric-box.success { border-left-color: var(--success); }
+        .metric-box.danger { border-left-color: var(--danger); }
+
+        .topic-score-row {
+            margin-bottom: 15px;
+        }
+
+        .topic-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .topic-bar-bg {
+            background-color: #e9ecef;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .topic-bar-fill {
+            height: 100%;
+            background-color: var(--primary-light);
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        .teacher-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .teacher-table th, .teacher-table td {
+            border: 1px solid var(--border);
+            padding: 12px;
+            text-align: left;
+        }
+
+        .teacher-table th {
+            background-color: var(--primary);
+            color: var(--text-light);
+        }
+
+        .teacher-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            margin-bottom: -1px;
+            font-weight: 600;
+            color: #666;
+            background-color: #e9ecef;
+            border-radius: 4px 4px 0 0;
+            margin-right: 5px;
+        }
+
+        .tab.active {
+            color: var(--text-light);
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            font-size: 12px;
+            color: #6c757d;
+            border-top: 1px solid var(--border);
+            margin-top: 25px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Plataforma Avanzada de Ensayos Certamen 2</h1>
+        <p></p>
+    </header>
+
+    <div class="container">
+        
+        <!-- Tab System for Student vs Teacher View -->
+        <div class="tabs" id="navTabs">
+            <button class="tab active" onclick="switchTab('student-view')">Evaluación de Estudiante</button>
+            <button class="tab" onclick="switchTab('teacher-view')">Panel del Profesor (Historial)</button>
+        </div>
+
+        <!-- VIEW 1: REGISTRATION -->
+        <div id="registration-card" class="card">
+            <h2>Registro de Identificación</h2>
+            <p style="margin-bottom: 20px; color: #555;">Ingrese su nombre completo para iniciar la evaluación de alta exigencia analítica. Al finalizar, se generará un reporte de desempeño.</p>
+            
+            <div class="form-group">
+                <label for="studentName">Nombre del Estudiante:</label>
+                <input type="text" id="studentName" placeholder="Ej. Matías Caamaño">
+            </div>
+            
+            <button class="btn btn-accent" style="width: 100%; margin-top: 10px;" onclick="startExam()">Iniciar Certamen de Práctica Avanzado</button>
+        </div>
+
+        <!-- VIEW 2: EXAM (QUIZ RUNTIME) -->
+        <div id="exam-card" class="card hidden">
+            <div class="quiz-header">
+                <span id="question-counter" style="font-weight: bold; color: var(--primary);">Pregunta 1 de 30</span>
+                <span id="timer-display" style="font-family: monospace; font-size: 16px; font-weight: bold; color: var(--success);">Estudiante Activo</span>
+            </div>
+            
+            <div class="progress-bar-container">
+                <div id="exam-progress" class="progress-bar"></div>
+            </div>
+
+            <!-- Dynamic Question Content Area -->
+            <div id="question-content">
+                <!-- Injected via JavaScript -->
+            </div>
+
+            <div class="nav-buttons">
+                <button id="btn-prev" class="btn" style="background-color: #6c757d;" onclick="navigateQuestion(-1)">Anterior</button>
+                <button id="btn-next" class="btn" onclick="navigateQuestion(1)">Siguiente / Guardar</button>
+                <button id="btn-finish" class="btn btn-accent hidden" onclick="calculateScoreAndSave()">Finalizar y Evaluar Rendimiento</button>
+            </div>
+        </div>
+
+        <!-- VIEW 3: SYSTEM DIAGNOSTIC (RESULTS) -->
+        <div id="results-card" class="card hidden">
+            <h2>Resultados e Informe Técnico de Diagnóstico</h2>
+            <div class="diagnostic-grid">
+                
+                <div class="metric-box" id="general-metrics">
+                    <h3 style="color: var(--primary); margin-bottom: 15px;">Resumen de Desempeño</h3>
+                    <p style="font-size: 16px; margin-bottom: 10px;">Estudiante: <span id="res-name" style="font-weight: bold;">-</span></p>
+                    <p style="font-size: 20px; margin-top: 15px; font-weight: bold; color: var(--accent);">Puntaje Total: <span id="res-score">0</span> / 30 (<span id="res-percent">0</span>%)</p>
+                    <p style="font-size: 18px; font-weight: bold; margin-top: 10px;" id="res-status-text">-</p>
+                </div>
+
+                <div class="metric-box">
+                    <h3 style="color: var(--primary); margin-bottom: 15px;">Análisis Temático de Brechas</h3>
+                    <div id="topic-bars-container">
+                        <!-- Bars dynamically injected here -->
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card" style="margin-top: 25px; background-color: #f8f9fa; box-shadow: none; border: 1px solid #e3e6f0;">
+                <h3 style="color: var(--primary); margin-bottom: 10px; font-size: 16px;">Recomendación Metodológica Personalizada:</h3>
+                <p id="personalized-feedback" style="font-size: 14px; color: #444; line-height: 1.5;">-</p>
+            </div>
+
+            <button class="btn" style="margin-top: 20px;" onclick="restartExam()">Rendir el Examen Nuevamente</button>
+        </div>
+
+        <!-- VIEW 4: TEACHER DASHBOARD -->
+        <div id="teacher-card" class="card hidden">
+            <h2>Panel de Control Docente y Estadísticas Históricas</h2>
+            <p style="color: #666; margin-bottom: 20px; font-size: 14px;">Este panel almacena de forma persistente local (localStorage) los intentos realizados en este navegador por sus alumnos. Puede monitorear las brechas grupales y exportar los datos estructurados.</p>
+            
+            <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+                <button class="btn btn-accent" onclick="exportHistoricalData()">Exportar Estadísticas a CSV (Excel)</button>
+                <button class="btn" style="background-color: var(--danger);" onclick="clearTeacherStorage()">Restablecer Base de Datos Local</button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="teacher-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha/Hora</th>
+                            <th>Estudiante</th>
+                            <th>Puntaje</th>
+                            <th>% Rendimiento</th>
+                            <th>Fallas Críticas (Temas)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teacher-table-body">
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #999;">No hay registros de estudiantes evaluados en este equipo aún.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; Realizado Por Matías Caamaño ayudante de AEM 2026-1</p>
+    </footer>
+
+    <script>
+        // Data matrix containing exactly 30 high-rigidity multiple-choice questions
+        const quizData = [
+            // TOPIC 1: Regularización (Ridge, Lasso, Elastic Net)
+            {
+                id: 1,
+                topic: "Regularización (Lasso/Ridge/Elastic Net)",
+                question: "Al ajustar un modelo de regresión lineal múltiple no regularizado (OLS) para estimar el precio de venta de propiedades, se incluyen variables altamente correlacionadas. El modelo OLS arroja un coeficiente negativo contraintuitivo para 'Cantidad de Habitaciones'. Al aplicar una regresión Ridge, los coeficientes recuperan su sentido lógico y positivo. ¿Por qué ocurre este fenómeno analítico?",
+                code: "",
+                options: [
+                    "OLS presenta alta varianza por multicolinealidad; Ridge estabiliza los coeficientes eliminando el sesgo intencionadamente para reducir la varianza conjunta.",
+                    "OLS presenta baja varianza por multicolinealidad; Ridge estabiliza los coeficientes introduciendo un sesgo intencionado que aumenta la varianza conjunta de los estimadores.",
+                    "OLS presenta alta varianza por multicolinealidad; Ridge estabiliza los coeficientes introduciendo un sesgo intencionado que reduce la varianza conjunta de los estimadores.",
+                    "OLS presenta alta varianza por multicolinealidad; Ridge estabiliza los coeficientes introduciendo un sesgo intencionado que reduce la covarianza ortogonal de los estimadores."
+                ],
+                correctIndex: 2
+            },
+            {
+                id: 2,
+                topic: "Regularización (Lasso/Ridge/Elastic Net)",
+                question: "Un equipo de automatización industrial recopila datos de 150 sensores de vibración instalados en una turbina. Su objetivo principal no es solo predecir la falla, sino diseñar una placa de hardware más económica que incluya únicamente los 10 sensores más críticos, descartando el resto. ¿Qué enfoque metodológico deben aplicar?",
+                code: "",
+                options: [
+                    "Deben utilizar una Regresión Lasso (L1), debido a que su penalización intrínseca realiza una selección automática de características, forzando los coeficientes de los sensores redundantes a ser exactamente cero.",
+                    "Deben utilizar una Regresión Ridge (L2), debido a que su penalización matricial realiza una selección ortogonal de características, forzando los autovalores de los sensores redundantes a ser exactamente cero.",
+                    "Deben utilizar una Regresión Elastic Net (L1+L2) con alpha=0, debido a que su penalización combinada realiza una selección iterativa de características, forzando los gradientes de los sensores redundantes a ser exactamente cero.",
+                    "Deben utilizar un Análisis de Componentes Principales (PCA), debido a que su descomposición espectral realiza una selección directa de características, forzando las cargas de los sensores redundantes a ser exactamente cero."
+                ],
+                correctIndex: 0
+            },
+            {
+                id: 3,
+                topic: "Regularización (Lasso/Ridge/Elastic Net)",
+                question: "Durante el ajuste de un modelo de regularización (Ridge o Lasso), el científico de datos incrementa progresivamente el parámetro de penalización lambda. Al evaluar el modelo, observa que el error cuadrático medio (MSE) en el conjunto de entrenamiento aumenta continuamente, pero el MSE en el conjunto de prueba primero disminuye y luego vuelve a subir. ¿Cómo se explica e interpreta este comportamiento?",
+                code: "",
+                options: [
+                    "El incremento de la penalización introduce un sesgo en los estimadores que logra aumentar su varianza. Esto favorece el sobreajuste al ruido del entrenamiento, mejorando la generalización en prueba.",
+                    "El incremento de la penalización introduce una varianza en los estimadores que logra reducir su sesgo. Esto evita el sobreajuste al ruido del entrenamiento, mejorando la generalización en prueba.",
+                    "El incremento de la penalización elimina el sesgo en los estimadores y logra reducir drásticamente su varianza. Esto evita el sobreajuste al ruido del entrenamiento, empeorando la generalización en prueba.",
+                    "El incremento de la penalización introduce un sesgo en los estimadores que logra reducir drásticamente su varianza. Esto evita el sobreajuste al ruido del entrenamiento, mejorando la generalización en prueba."
+                ],
+                correctIndex: 3
+            },
+            {
+                id: 4,
+                topic: "Regularización (Lasso/Ridge/Elastic Net)",
+                question: "En un entorno industrial pesquero, se miden los parámetros operativos utilizando dos sensores redundantes de temperatura que presentan una correlación muestral extrema (r = 0.995). Al ajustar un modelo de regresión lineal, se evalúa el comportamiento de Ridge frente a Lasso. ¿Cuál es el impacto analítico exacto de ambos enfoques ante esta multicolinealidad?",
+                code: "",
+                options: [
+                    "Ridge seleccionará de manera arbitraria uno de los sensores forzando al otro a cero; Lasso encogerá los coeficientes de ambos sensores de forma conjunta manteniéndolos en el modelo con magnitudes similares.",
+                    "Lasso seleccionará de manera arbitraria uno de los sensores forzando al otro a cero; Ridge encogerá los coeficientes de ambos sensores de forma conjunta manteniéndolos en el modelo con magnitudes similares.",
+                    "Lasso mantendrá ambos coeficientes idénticos dividiendo la magnitud del efecto de forma equitativa; Ridge seleccionará el sensor con mayor varianza marginal forzando al otro a colapsar exactamente a cero.",
+                    "Ridge mantendrá ambos coeficientes idénticos multiplicando la magnitud del efecto equitativamente; Lasso amplificará los coeficientes de ambos sensores induciendo multicolinealidad perfecta en el modelo."
+                ],
+                correctIndex: 1
+            },
+            {
+                id: 5,
+                topic: "Regularización (Lasso/Ridge/Elastic Net)",
+                question: "Se entrena un modelo lineal múltiple no regularizado (OLS) y un modelo regularizado Ridge (L2) sobre el conjunto de datos de precios de viviendas de California ('California Housing') provisto por sklearn. Tras evaluar el error cuadrático medio (MSE) en los sets de entrenamiento y prueba, se obtienen los siguientes indicadores estadísticos:",
+                code: `Modelo OLS   -> MSE_train: 0.5243  |  MSE_test: 0.5890
+Modelo Ridge -> MSE_train: 0.5410  |  MSE_test: 0.5512`,
+                options: [
+                    "El modelo OLS presenta un sobreajuste evidente (overfitting) debido a que logra memorizar patrones de ruido complejos del set de entrenamiento, lo que eleva el error de generalización en datos no vistos (test) en comparación con el modelo Ridge penalizado.",
+                    "El modelo Ridge es inferior porque incrementó el error de entrenamiento (MSE_train) de 0.5243 a 0.5410, violando el supuesto fundamental de minimización OLS.",
+                    "La diferencia indica que el conjunto de datos California Housing sufre de colinealidad perfecta intrínseca, lo cual inhabilita el uso de OLS por singularidad matricial estricta.",
+                    "El aumento del MSE_test en OLS demuestra que los residuos siguen una distribución heterocedástica con un patrón de embudo severo."
+                ],
+                correctIndex: 0
+            },
+            {
+                id: 6,
+                topic: "Regularización (Lasso/Ridge/Elastic Net)",
+                question: "¿Por qué la omisión del proceso de estandarización previa (escalamiento a media cero y varianza unitaria) invalida analíticamente la interpretación y el correcto funcionamiento de las regresiones Ridge y Lasso?",
+                code: ``,
+                options: [
+                    "Porque las penalizaciones L1 y L2 dependen directamente de la magnitud absoluta de los coeficientes beta. Si los predictores tienen escalas dispares, las variables con unidades numéricas intrínsecamente grandes tendrán coeficientes artificialmente pequeños y apenas serán penalizadas por el algoritmo.",
+                    "Porque sin estandarización la función de pérdida global deja de ser convexa, generando infinitos mínimos locales que impiden la convergencia del método de máxima verosimilitud restringida.",
+                    "Debido a que el estadístico R² ajustado arrojará valores negativos fuera del rango estandarizado [0, 1] al verse condicionado por las unidades dimensionales de la variable de respuesta cuantitativa.",
+                    "La falta de estandarización provoca colinealidad perfecta matemática instantánea entre la variable independiente cuantitativa y el término del intercepto beta_0."
+                ],
+                correctIndex: 0
+            },
+
+            // TOPIC 2: Análisis de Componentes Principales (PCA)
+            {
+                id: 7,
+                topic: "Análisis de Componentes Principales (PCA)",
+                question: "Un analista de datos aplica Análisis de Componentes Principales (PCA) sobre la matriz de características continuas de un proceso industrial que cuenta con 3 variables altamente correlacionadas. Al ejecutar la descomposición en autovalores de la matriz de correlación muestral, obtiene los siguientes autovalores analíticos:",
+                code: `Lambda_1 = 2.15
+Lambda_2 = 0.65
+Lambda_3 = 0.20
+
+¿Cuál es la proporción acumulada de la varianza total explicada si el analista decide retener los dos primeros componentes principales (CP1 y CP2)? Realice el cálculo matemático exacto.`,
+                options: [
+                    "71.67%",
+                    "93.33%",
+                    "85.00%",
+                    "28.33%"
+                ],
+                correctIndex: 1
+            },
+            {
+                id: 8,
+                topic: "Análisis de Componentes Principales (PCA)",
+                question: "Suponga que el primer vector de carga (loadings/eigenvector) obtenido al aplicar PCA sobre un espacio tridimensional de variables de sensores industriales está definido exactamente por el siguiente vector de coeficientes normalizados:",
+                code: `Phi_1 = [0.707, -0.100, 0.699]
+
+Si ingresa una nueva observación cuyos valores ya se encuentran completamente estandarizados (Z-score) y corresponden al vector x = [1.20, -0.50, 2.00], ¿cuál es el valor numérico preciso del score o coordenada proyectada para esta instancia sobre el primer componente principal (Z_1)? Calcule el desarrollo.`,
+                options: [
+                    "2.296",
+                    "1.542",
+                    "0.898",
+                    "3.120"
+                ],
+                correctIndex: 0
+            },
+            {
+                id: 9,
+                topic: "Análisis de Componentes Principales (PCA)",
+                question: "En la formulación matemática estricta de PCA, los vectores de carga Phi_j que definen las combinaciones lineales de los componentes principales están sujetos a restricciones de optimización fundamentales. ¿Cuáles son estas condiciones geométricas y algebraicas?",
+                code: "",
+                options: [
+                    "Cada vector de carga debe estar normalizado (suma de coeficientes al cuadrado = 0) y los vectores de componentes principales adyacentes deben ser ortogonales entre sí (correlación lineal perfecta).",
+                    "Cada vector de carga debe estar estandarizado (suma de coeficientes al cuadrado = 1) y los vectores de componentes principales adyacentes deben ser paralelos entre sí (correlación lineal nula).",
+                    "Cada vector de carga debe estar normalizado (suma de coeficientes al cuadrado = 1) y los vectores de componentes principales adyacentes deben ser ortogonales entre sí (correlación lineal nula).",
+                    "Cada vector de carga debe estar normalizado (suma de coeficientes al cuadrado = 1) y los vectores de componentes principales adyacentes deben ser ortogonales entre sí (correlación lineal perfecta)."
+                ],
+                correctIndex: 2
+            },
+            {
+                id: 10,
+                topic: "Análisis de Componentes Principales (PCA)",
+                question: "Al interpretar un gráfico Biplot proyectado en los dos primeros componentes principales (CP1 y CP2), se observa que el vector que representa a la variable 'Ingreso' se alinea de forma paralela al eje del CP1, mientras que el vector de la variable 'Edad' es perpendicular a dicho eje. ¿Cuál es el análisis metodológico correcto?",
+                code: "",
+                options: [
+                    "'Edad' posee una carga muy alta en valor absoluto para el CP1, dominando la variabilidad de este eje, mientras que 'Ingreso' tiene una carga cercana a cero en dicho componente.",
+                    "'Ingreso' posee una varianza condicional muy baja para el CP1, minimizando la variabilidad de este eje, mientras que 'Edad' tiene una varianza marginal máxima en dicho componente.",
+                    "'Ingreso' posee una carga muy alta en valor absoluto para el CP1, dominando la variabilidad de este eje, mientras que 'Edad' tiene una carga cercana a cero en dicho componente.",
+                    "'Ingreso' posee una covarianza ortogonal muy alta respecto al CP2, dominando la proyección de este eje, mientras que 'Edad' tiene una colinealidad perfecta con el intercepto."
+                ],
+                correctIndex: 2
+            },
+            {
+                id: 11,
+                topic: "Análisis de Componentes Principales (PCA)",
+                question: "Al comparar la técnica de Regresión de Componentes Principales (PCR) frente a las técnicas de regularización penalizada como Ridge y Lasso, se destaca una diferencia teórica fundamental en cómo reducen la variabilidad del modelo. ¿Cuál es esta diferencia?",
+                code: ``,
+                options: [
+                    "Lasso y Ridge son enfoques supervisados que contraen los coeficientes considerando activamente la relación matemática con la variable respuesta Y; por el contrario, PCR es un método no supervisado donde los componentes se construyen maximizando únicamente la varianza del espacio X, sin garantía de que los componentes retenidos sean los más explicativos para predecir Y.",
+                    "PCR elimina el sesgo por completo del estimador final, mientras que Ridge incrementa monotónicamente la varianza de las predicciones al verse forzado por el parámetro lambda.",
+                    "Lasso utiliza una penalización ortogonal basada en autovalores, mientras que PCR depende de manera única del método de máxima verosimilitud restringida (REML).",
+                    "PCR requiere que todas las variables categóricas del dataset sean omitidas, mientras que Ridge permite manejar variables con codificación One-Hot sin penalizar el tamaño de los coeficientes."
+                ],
+                correctIndex: 0
+            },
+            {
+                id: 12,
+                topic: "Análisis de Componentes Principales (PCA)",
+                question: "Si un científico de datos reduce las dimensiones de su matriz de diseño de p características a k componentes principales (donde k < p), y utiliza estos k componentes para ajustar un modelo de regresión lineal, ¿cuál es el impacto analítico neto sobre las propiedades estadísticas de las predicciones?",
+                code: ``,
+                options: [
+                    "Se elimina el sesgo por completo del modelo y se estabilizan los intervalos de confianza mediante la distribución t de Student con grados de libertad ajustados por el parámetro de penalización L1.",
+                    "Se introduce intencionalmente un sesgo en las estimaciones a cambio de lograr una reducción drástica en la varianza de las predicciones del modelo, mitigando las discrepancias generadas por la multicolinealidad del espacio original.",
+                    "El modelo se vuelve perfectamente inmune a la presencia de outliers y puntos de alta influencia debido a la propiedad distributiva de los autovalores muestrales.",
+                    "Se altera la escala cuantitativa de la variable de respuesta Y, obligando a revaluar el supuesto de normalidad de los errores mediante el test estadístico de Durbin-Watson."
+                ],
+                correctIndex: 1
+            },
+
+            // TOPIC 3: Regresión Logística (Simple y Múltiple)
+            {
+                id: 13,
+                topic: "Regresión Logística Simple y Múltiple",
+                question: "Se ajusta un modelo logit simple utilizando como predictor el saldo ('balance'). El coeficiente arrojado para 'balance' es de +0.0055. ¿Cuál de las siguientes afirmaciones describe matemáticamente el efecto de este coeficiente?",
+                code: "",
+                options: [
+                    "Un aumento unitario en el saldo suma a las odds de incurrir en default un factor exacto de e^(0.0055), manteniendo una relación lineal con la probabilidad de éxito.",
+                    "Un aumento unitario en el saldo multiplica a las odds de incurrir en default por un factor exacto de e^(-0.0055), manteniendo una relación exponencial con la probabilidad de éxito.",
+                    "Un aumento unitario en el saldo suma a las odds de incurrir en default un factor exacto de 0.0055, manteniendo una relación exponencial con la probabilidad de éxito.",
+                    "Un aumento unitario en el saldo multiplica a las odds de incurrir en default por un factor exacto de e^(0.0055), manteniendo una relación exponencial con la probabilidad de éxito."
+                ],
+                correctIndex: 3
+            },
+            {
+                id: 14,
+                topic: "Regresión Logística Simple y Múltiple",
+                question: "Utilizando la misma base de datos 'Default', se expande el análisis a un modelo de regresión logística múltiple incorporando los ingresos ('income'), el saldo ('balance') y una variable binaria estandarizada que indica si el cliente es estudiante ('student', 1 si Sí, 0 si No). La ecuación del log-odds estimada es la siguiente:",
+                code: `ln( p / (1 - p) ) = -10.8690 + 0.00000303 * income + 0.0057 * balance - 0.6468 * student
+
+Calcule la probabilidad exacta de incurrir en default, p(X), para un cliente que NO es estudiante (student = 0), posee un ingreso mensual de $40.000 y mantiene un saldo promedio en su tarjeta de $2.000.`,
+                options: [
+                    "24.05%",
+                    "67.21%",
+                    "46.19%",
+                    "11.92%"
+                ],
+                correctIndex: 0
+            },
+            {
+                id: 15,
+                topic: "Regresión Logística Simple y Múltiple",
+                question: "Se añade un término de interacción multiplicativo entre 'balance' e 'income' en un modelo logístico múltiple, resultando estadísticamente significativo. ¿Cuál es la interpretación analítica correcta de este término?",
+                code: "",
+                options: [
+                    "El impacto del saldo sobre el intercepto de default se neutraliza a medida que el nivel de ingresos disminuye, demostrando que el riesgo está condicionado ortogonalmente por ambas dimensiones.",
+                    "El impacto de los ingresos sobre la varianza de default se estabiliza a medida que el nivel de saldo aumenta, demostrando que el riesgo está condicionado marginalmente por ambas dimensiones.",
+                    "El impacto del saldo sobre las odds de default se modifica a medida que el nivel de ingresos aumenta, lo que demuestra que el riesgo está condicionado concurrentemente por ambas dimensiones.",
+                    "El impacto del saldo sobre los residuos de default se amplifica a medida que el nivel de ingresos colapsa, demostrando que el riesgo está condicionado homocedásticamente por ambas dimensiones."
+                ],
+                correctIndex: 2
+            },
+            {
+                id: 16,
+                topic: "Regresión Logística Simple y Múltiple",
+                question: "Al analizar el conjunto de datos 'Default', se observa una aparente contradicción analítica de gran relevancia teórica. Al estimar un modelo logit simple considerando únicamente la variable cualitativa 'student', el coeficiente es POSITIVO (+0.4049), indicando que los estudiantes tienen mayor probabilidad de default. No obstante, al ajustar el modelo múltiple incorporando la variable cuantitativa 'balance', el coeficiente de 'student' cambia radicalmente de signo y se vuelve NEGATIVO (-0.6468). ¿Cuál es la justificación técnica de este fenómeno?",
+                code: ``,
+                options: [
+                    "El cambio de signo es una manifestación del fenómeno de confusión por correlación (asimilable a la Paradoja de Simpson). Los estudiantes en promedio tienden a acumular saldos de tarjeta de crédito significativamente más altos que los no estudiantes. Por lo tanto, en el modelo simple capturan el riesgo asociado al saldo alto; pero al controlar por 'balance' (a igual nivel de saldo), un estudiante demuestra ser inherentemente menos riesgoso (menor probabilidad de default) que un individuo no estudiante.",
+                    "El fenómeno demuestra la existencia de multicolinealidad perfecta analítica entre el nivel de ingresos cuantitativos y la condición académica del postulante.",
+                    "El optimizador de máxima verosimilitud de statsmodels colapsó numéricamente debido a la falta de regularización L2 in las iteraciones de mínimos cuadrados ponderados.",
+                    "El modelo simple sufre de un Error de Tipo I sistemático debido a que el tamaño de la muestra de 10.000 observaciones es insuficiente para estimar variables cualitativas binarias."
+                ],
+                correctIndex: 0
+            },
+            {
+                id: 17,
+                topic: "Regresión Logística Simple y Múltiple",
+                question: "Un analista de datos industrial evalúa el ajuste global de un modelo de regresión logística múltiple implementado para la detección de anomalías. Extrae los siguientes indicadores logarítmicos del reporte oficial:",
+                code: `Log-Likelihood (Modelo Completo Ajustado) = -785.77
+LL-Null (Modelo Nulo con Intercepto Único) = -1460.30
+
+Calcule el valor matemático exacto del estadístico Pseudo-R² de McFadden que mide la bondad de ajuste relativa respecto al modelo nulo.`,
+                options: [
+                    "0.5381",
+                    "0.4619",
+                    "0.8972",
+                    "0.1953"
+                ],
+                correctIndex: 1
+            },
+            {
+                id: 18,
+                topic: "Regresión Logística Simple y Múltiple",
+                question: "La estimación de los coeficientes en un modelo de regresión logística se realiza mediante el método de Máxima Verosimilitud (MLE), a diferencia de la regresión lineal que utiliza mínimos cuadrados. ¿Cuál es el objetivo analítico algorítmico al maximizar la función de log-verosimilitud?",
+                code: ``,
+                options: [
+                    "Encontrar el conjunto de parámetros beta que minimice de manera iterativa la suma de los residuos al cuadrado en el conjunto de prueba (test).",
+                    "Encontrar los coeficientes vectoriales que maximicen la probabilidad conjunta de observar el set de datos real; es decir, que las probabilidades predichas por el modelo para las instancias clasificadas como éxitos (Y=1) sean lo más cercanas a 1 posibles, y para los fracasos (Y=0) sean lo más cercanas a 0 posibles.",
+                    "Ajustar una curva con forma de S que mantemain los residuos con varianza constante (homocedasticidad) para cumplir estrictamente con el test estadístico de White.",
+                    "Sustituir las variables cualitativas por combinaciones lineales normalizadas ortogonales de máxima varianza proyectada."
+                ],
+                correctIndex: 1
+            },
+
+            // TOPIC 4: Regresión Logística Multinomial
+            {
+                id: 19,
+                topic: "Regresión Logística Multinomial",
+                question: "Se procesa el archivo de datos continuos 'transport_choices.csv' con información de 300 usuarios sobre la elección de su medio de transporte prioritario (0: Automóvil, 1: Bus, 2: Bicicleta). Se modela mediante una Regresión Logística Multinomial ('MNLogit') utilizando statsmodels, fijando la categoría 'Automóvil (0)' como el nivel base de referencia. Se obtiene el siguiente extracto del reporte:",
+                code: `MNLogit Regression Results
+===================================================================
+Dep. Variable: choice (Ref: 0)  |  Log-Likelihood: -237.73
+-------------------------------------------------------------------
+choice=1 (Bus)   coef    std err         z      P>|z|
+const           5.1657     0.797     6.478      0.000
+income         -0.0001  1.43e-05    -7.567      0.000
+travel_time    -0.0052     0.010    -0.520      0.603
+===================================================================
+
+Para un individuo que reporta un ingreso cuantitativo mensual ('income') de $30.000 y un tiempo de traslado ('travel_time') de 0 minutos, calcule el valor exacto de la razón de probabilidad (odds relativas) de elegir Bus frente a Automóvil.`,
+                options: [
+                    "e^(2.1657) (Aprox. 8.72)",
+                    "e^(5.1657) (Aprox. 175.15)",
+                    "e^(-3.0000) (Aprox. 0.049)",
+                    "1.0000 (Probabilidades idénticas)"
+                ],
+                correctIndex: 0
+            },
+            {
+                id: 20,
+                topic: "Regresión Logística Multinomial",
+                question: "En la formulación analítica de la regresión logística multinomial con K clases posibles, donde la clase K se establece rigurosamente como la categoría base de referencia, ¿cuál es la expresión matemática que determina la probabilidad absoluta de que una observación pertenezca a dicha clase de referencia K?",
+                code: ``,
+                options: [
+                    "Pr(Y = K | X) = 1 / [ 1 + Suma_{l=1}^{K-1} ( e^(beta_l * X) ) ]",
+                    "Pr(Y = K | X) = e^(beta_K * X) / [ Suma_{l=1}^{K} ( e^(beta_l * X) ) ]",
+                    "Pr(Y = K | X) = 1 - Suma_{l=1}^{K-1} ( beta_l * X )",
+                    "Pr(Y = K | X) = ln( beta_K * X ) / Log-Likelihood"
+                ],
+                correctIndex: 0
+            },
+            {
+                id: 21,
+                topic: "Regresión Logística Multinomial",
+                question: "¿Cuál es la consecuencia algebraica directa si intentáramos estimar un modelo estadístico de regresión logística multinomial sin parametrizar u obligar a una de las categorías a actuar como nivel base de referencia (es decir, estimando coeficientes libres para las K clases)?",
+                code: ``,
+                options: [
+                    "El modelo se sesga monotónicamente hacia la categoría que presente el menor número de observaciones muestrales en el entrenamiento.",
+                    "Se genera un problema crítico de redundancia matemática (indeterminación por multicolinealidad perfecta en las probabilidades), provocando que existan infinitas combinaciones de coeficientes capaces de entregar las mismas probabilidades, haciendo que la matriz de información se vuelva singular e imposible de invertir numéricamente.",
+                    "Las métricas Accuracy y F1-score convergen instantáneamente a cero debido a la alteración del supuesto de normalidad de los residuos multinomiales.",
+                    "El test estadístico de Durbin-Watson arrojará de forma obligatoria un valor numérico cercano a 4.0, demostrando autocorrelación negativa perfecta."
+                ],
+                correctIndex: 1
+            },
+            {
+                id: 22,
+                topic: "Regresión Logística Multinomial",
+                question: "Un modelo estadístico multinomial de 3 categorías (0: Ref, 1, 2) arroja las siguientes ecuaciones lineales de log-odds relativas calculadas para un perfil de usuario específico:",
+                code: `Logit_relativo (Clase 1 vs 0) = 0.50
+Logit_relativo (Clase 2 vs 0) = -1.20
+
+Determine de forma precisa la probabilidad porcentual de que dicho usuario elija la clase base de referencia (Clase 0). Calcule el desarrollo algebraico.`,
+                options: [
+                    "33.90%",
+                    "51.24%",
+                    "14.88%",
+                    "64.60%"
+                ],
+                correctIndex: 0
+            },
+
+            // TOPIC 5: Matrices de Confusión y Métricas de Rendimiento
+            {
+                id: 23,
+                topic: "Matrices de Confusión y Métricas de Rendimiento",
+                question: "Se evalúa un modelo predictivo binario diseñado para identificar transacciones financieras fraudulentas (donde la clase 1 corresponde a Fraude y la clase 0 a Transacción Legítima). El set de prueba cuenta con un volumen desbalanceado de 2.000 observaciones (1.933 reales clase 0 y 67 reales clase 1). Tras ejecutar la predicción, el clasificador reporta una Exhaustividad (Recall) del 94.03% y una Especificidad del 86.24%. ¿Cuál es el número preciso de Falsos Positivos (Error Tipo I) cometidos por el modelo sobre el conjunto de transacciones legítimas?",
+                code: `Matriz de Confusión Parcial:
+===================================
+Actual vs Predicho   |  No   |  Sí  
+-----------------------------------
+Actual No (0)        |  TN   |  FP  
+Actual Sí (1)        |   4   |  63  
+===================================`,
+                options: [
+                    "266",
+                    "14",
+                    "55",
+                    "18"
+                ],
+                correctIndex: 0
+            },
+            {
+                id: 24,
+                topic: "Matrices de Confusión y Métricas de Rendimiento",
+                question: "En el desarrollo técnico del sistema de visión artificial para un vehículo autónomo de transporte industrial, se calibra un clasificador encargado de detectar la presencia de peatones en la calzada ('¡ALERTA: PEATÓN!'). El equipo de ingeniería analiza el umbral de decisión probabilístico. Si la prioridad absoluta del diseño es resguardar la vida humana evitando a toda costa atropellos por omisión, ¿cuál decisión metodológica respecto al umbral y las métricas de rendimiento es la correcta?",
+                code: ``,
+                options: [
+                    "Se debe incrementar el umbral de decisión a 0.85 para maximizar la Precisión, asegurando que cada vez que el vehículo frene exista un 100% de certeza de presencia peatonal, tolerando la existencia de Falsos Negativos.",
+                    "Se debe disminuir drásticamente el umbral de decisión probabilístico (ej. a 0.15) para maximizar la Exhaustividad (Recall), asumiendo un costo operativo de cometer más Falsos Positivos ('frenados fantasma por ruido de fondo') con tal de minimizar a cero los Falsos Negativos (peatones no detectados).",
+                    "Maximizar de manera única la Especificidad matemática mediante la aplicación del estimador analítico de mínimos cuadrados ordinarios ponderados.",
+                    "Fijar el umbral exactamente en el punto donde la métrica Accuracy alcance el valor numérico unitario a través de la duplicación sintética SMOTE."
+                ],
+                correctIndex: 1
+            },
+            {
+                id: 25,
+                topic: "Matrices de Confusión y Métricas de Rendimiento",
+                question: "En un reporte de métricas de clasificación con desbalance severo (clase 0: 1926 muestras, clase 1: 74 muestras), el 'accuracy' general es de 97%, pero el 'macro avg f1-score' es de solo 72%. ¿Qué significa esta discrepancia?",
+                code: "",
+                options: [
+                    "La métrica 'macro avg f1-score' penaliza la ALTA capacidad del modelo para identificar la clase MAYORITARIA, evidenciando que el accuracy está desinflado por el balance de clases.",
+                    "La métrica 'weighted avg f1-score' penaliza la BAJA capacidad del modelo para identificar la clase MINORITARIA, evidenciando que el accuracy está artificialmente desinflado por el desbalance extremo.",
+                    "La métrica 'macro avg f1-score' penaliza la BAJA capacidad del modelo para identificar la clase MINORITARIA, evidenciando que el accuracy está artificialmente inflado por el desbalance extremo de clases.",
+                    "La métrica 'macro avg f1-score' premia la BAJA capacidad del modelo para identificar la clase MINORITARIA, evidenciando que el accuracy está artificialmente inflado por el desbalance extremo de clases."
+                ],
+                correctIndex: 2
+            },
+            {
+                id: 26,
+                topic: "Matrices de Confusión y Métricas de Rendimiento",
+                question: "Al trazar la curva ROC (Receiver Operating Characteristic) para un modelo predictivo, un ingeniero observa que el Área Bajo la Curva (AUC) arroja un valor numérico exacto de 0.50 en el conjunto de validación cruzada. ¿Cuál es la implicancia teórica y geométrica directa de este resultado?",
+                code: ``,
+                options: [
+                    "La curva ROC es perfectamente ortogonal al eje de las abscisas, demostrando que el clasificador posee un poder discriminatorio absoluto y libre de sesgo.",
+                    "La curva ROC se superpone exactamente sobre la diagonal de 45 grados que conecta el punto (0,0) con el (1,1), lo que significa analíticamente que el modelo carece por completo de capacidad de discriminación estadística, comportándose de forma idéntica a un clasificador aleatorio basado en el azar.",
+                    "Se cumplió de forma idéntica la restricción de normalidad de los residuos estandarizados bajo las condiciones restrictivas de optimización Lasso L1.",
+                    "El modelo presenta sobreajuste severo debido a la aplicación de un operador de submuestreo por enlaces de Tomek links inversos."
+                ],
+                correctIndex: 1
+            },
+
+            // TOPIC 6: Validación Cruzada y Balanceo de Clases
+            {
+                id: 27,
+                topic: "Validación Cruzada y Balanceo de Clases",
+                question: "Al aplicar la técnica de sobremuestreo sintético SMOTE sobre la TOTALIDAD de la base de datos original ANTES de dividir los datos para una Validación Cruzada de 5-Fold, ¿qué error metodológico crítico se comete?",
+                code: "",
+                options: [
+                    "Genera Data Leakage. Aplicar SMOTE DESPUÉS de dividir los pliegues provoca sobreestimación artificial de métricas, ocultando la verdadera incapacidad del modelo para generalizar ante datos vistos.",
+                    "Genera Data Leakage. Aplicar SMOTE ANTES de dividir los pliegues provoca subestimación artificial de métricas, revelando la verdadera capacidad del modelo para generalizar ante datos no vistos.",
+                    "Elimina Data Leakage. Aplicar SMOTE ANTES de dividir los pliegues provoca sobreestimación artificial de métricas, ocultando la verdadera incapacidad del modelo para generalizar ante datos no vistos.",
+                    "Genera Data Leakage. Aplicar SMOTE ANTES de dividir los pliegues provoca sobreestimación artificial de métricas, ocultando la verdadera incapacidad del modelo para generalizar ante datos no vistos."
+                ],
+                correctIndex: 3
+            },
+            {
+                id: 28,
+                topic: "Validación Cruzada y Balanceo de Clases",
+                question: "Se cuenta con una población de datos industriales compuesta por 1.000 observaciones, de las cuales 900 corresponden a la clase operativa normal (0) y 100 a la clase de falla crítica (1). Si se programa una Validación Cruzada Estratificada de 10 pliegues (Stratified 10-Fold Cross-Validation), ¿cuál es la composición exacta obligatoria en términos de distribución de clases que debe poseer cada pliegue (fold) individual de validación?",
+                code: ``,
+                options: [
+                    "Cada fold contendrá exactamente 50 observaciones normales (0) y 50 observaciones de falla (1) para balancear artificialmente la frontera de decisión.",
+                    "Cada fold contendrá de forma homogénea 90 observaciones normales (0) y 10 observaciones de falla (1), preservando con estricta rigidez la proporción original de desbalance del 90%/10% en todas las particiones de entrenamiento y prueba.",
+                    "La distribución de instancias dentro de los folds se determina de forma aleatoria mediante el descenso de gradiente por coordenadas, inhabilitando las restricciones de estratificación.",
+                    "Se seleccionan únicamente los enlaces de Tomek links vectoriales para rellenar las particiones que presenten una suma de residuos cuadrados inferior a la varianza explicada."
+                ],
+                correctIndex: 1
+            },
+            {
+                id: 29,
+                topic: "Validación Cruzada y Balanceo de Clases",
+                question: "En el contexto de los algoritmos de submuestreo para mitigar los efectos negativos de las clases no balanceadas, ¿cuál es la ventaja analítica y la mecánica operativa de aplicar un filtro por Enlaces de Tomek (Tomek Links) o Vecinos Más Cercanos Editados (ENN) en comparación con un submuestreo puramente aleatorio (Random Under-Sampling)?",
+                code: ``,
+                options: [
+                    "Random Under-Sampling multiplica la varianza explicada eliminando autovalores menores de la matriz de covarianza estructural.",
+                    "En lugar de eliminar datos de forma indiscriminada perdiendo información valiosa, Tomek Links e ENN identifican instancias de la clase mayoritaria que se encuentran geográficamente adyacentes a ejemplos de la clase minoritaria (parejas recíprocas de vecinos más cercanos de distinta clase). Al eliminar estas observaciones de la frontera, se limpia el ruido limítrofe, ensanchando la frontera de decisión y facilitando la convergencia geométrica del modelo logístico.",
+                    "Ambos enfoques garantizan de forma determinista que el Pseudo-R² de McFadden del modelo nulo iguale algebraicamente al valor numérico unitario.",
+                    "Tomek Links genera nuevas muestras artificiales interpolando linealmente los vectores con puntuación Z-score superiores al apalancamiento muestral."
+                ],
+                correctIndex: 1
+            },
+            {
+                id: 30,
+                topic: "Validación Cruzada y Balanceo de Clases",
+                question: "El algoritmo SMOTE (Synthetic Minority Over-sampling Technique) genera instancias sintéticas interpolando geométricamente los vectores espaciales de la clase minoritaria. Suponga que la técnica selecciona una instancia objetivo A y su vecino más cercano B pertenecientes a la clase de falla industrial, cuyas coordenadas multidimensionales continuas estandarizadas son:",
+                code: `Instancia A = [10.00,  50.00]
+Instancia B = [12.00,  56.00]
+
+Si el optimizador estocástico genera un factor multiplicador aleatorio uniforme u = 0.25 para el cálculo del vector sintético, aplique la formulación operativa exacta del algoritmo ( S = A + u * (B - A) ) y determine las coordenadas numéricas de la nueva instancia generada.`,
+                options: [
+                    "[10.50, 51.50]",
+                    "[11.00, 53.00]",
+                    "[10.25, 50.25]",
+                    "[12.00, 56.00]"
+                ],
+                correctIndex: 0
+            }
+        ];
+
+        // Runtime state Variables
+        let currentQuestionIdx = 0;
+        let studentResponses = new Array(quizData.length).fill(null);
+        let studentInfo = { name: '' };
+
+        // Handle routing/view switching
+        function switchView(viewId) {
+            document.getElementById('registration-card').classList.add('hidden');
+            document.getElementById('exam-card').classList.add('hidden');
+            document.getElementById('results-card').classList.add('hidden');
+            document.getElementById('teacher-card').classList.add('hidden');
+            
+            document.getElementById(viewId).classList.remove('hidden');
+        }
+
+        // Utility function to generate SHA-256 hash securely
+        async function hashPassword(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function switchTab(tabId) {
+            const tabs = document.querySelectorAll('.tab');
+            
+            if (tabId === 'student-view') {
+                tabs.forEach(t => t.classList.remove('active'));
+                tabs[0].classList.add('active');
+                switchView('registration-card');
+            } else {
+                const pass = prompt('🔐 Ingrese la contraseña de administrador para el Panel del Profesor:');
+                if (!pass) return;
+
+                const passHash = await hashPassword(pass);
+                // Hash correspondiente a la contraseña por defecto (AEM2026)
+                const expectedHash = "1a2825af611c3d44c14aaa81b996042eaee3bb3597f132c3ec128f19c82a007f";
+
+                if (passHash === expectedHash) {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabs[1].classList.add('active');
+                    renderTeacherDashboard();
+                    switchView('teacher-card');
+                } else {
+                    alert('❌ Contraseña incorrecta. Acceso denegado.');
+                }
+            }
+        }
+
+        // Start exam event handler
+        function startExam() {
+            const nameInput = document.getElementById('studentName').value.trim();
+
+            if (!nameInput) {
+                alert('Por favor, ingrese su nombre antes de continuar.');
+                return;
+            }
+
+            studentInfo.name = nameInput;
+            currentQuestionIdx = 0;
+            studentResponses = new Array(quizData.length).fill(null);
+
+            switchView('exam-card');
+            renderQuestion();
+        }
+
+        // Dynamically render current question item
+        function renderQuestion() {
+            const q = quizData[currentQuestionIdx];
+            const container = document.getElementById('question-content');
+            
+            document.getElementById('question-counter').innerText = `Pregunta ${currentQuestionIdx + 1} de ${quizData.length}`;
+            
+            // Calculate exact completion progress bar metric
+            const progress = (currentQuestionIdx / quizData.length) * 100;
+            document.getElementById('exam-progress').style.width = `${progress}%`;
+
+            let codeHtml = q.code ? `<div class="code-block">${q.code}</div>` : '';
+            
+            let optionsHtml = '';
+            q.options.forEach((opt, idx) => {
+                let isChecked = studentResponses[currentQuestionIdx] === idx ? 'checked' : '';
+                optionsHtml += `
+                    <label class="option-card" onclick="saveAnswer(${idx})">
+                        <input type="radio" name="q_opt" value="${idx}" ${isChecked}>
+                        <span class="option-text">${escapeHtml(opt)}</span>
+                    </label>
+                `;
+            });
+
+            container.innerHTML = `
+                <div style="font-size: 13px; font-weight: bold; color: var(--accent); text-transform: uppercase; margin-bottom: 5px;">Materia: ${q.topic}</div>
+                <div class="question-text">${q.question}</div>
+                ${codeHtml}
+                <div class="options-container">
+                    ${optionsHtml}
+                </div>
+            `;
+
+            // Adjust navigation view boundaries buttons visibility
+            document.getElementById('btn-prev').style.visibility = currentQuestionIdx === 0 ? 'hidden' : 'visible';
+            
+            if (currentQuestionIdx === quizData.length - 1) {
+                document.getElementById('btn-next').classList.add('hidden');
+                document.getElementById('btn-finish').classList.remove('hidden');
+            } else {
+                document.getElementById('btn-next').classList.remove('hidden');
+                document.getElementById('btn-finish').classList.add('hidden');
+            }
+        }
+
+        function saveAnswer(optionIndex) {
+            studentResponses[currentQuestionIdx] = optionIndex;
+        }
+
+        function navigateQuestion(direction) {
+            if (direction === 1 && studentResponses[currentQuestionIdx] === null) {
+                alert('Debe seleccionar una alternativa antes de avanzar.');
+                return;
+            }
+
+            currentQuestionIdx += direction;
+            renderQuestion();
+        }
+
+        // Calculate metrics, output diagnostic dashboard insights, and trigger localStorage save
+        function calculateScoreAndSave() {
+            if (studentResponses[quizData.length - 1] === null) {
+                alert('Debe responder la última pregunta.');
+                return;
+            }
+
+            let totalCorrect = 0;
+            let topicStats = {
+                "Regularización (Lasso/Ridge/Elastic Net)": { total: 0, correct: 0 },
+                "Análisis de Componentes Principales (PCA)": { total: 0, correct: 0 },
+                "Regresión Logística Simple y Múltiple": { total: 0, correct: 0 },
+                "Regresión Logística Multinomial": { total: 0, correct: 0 },
+                "Matrices de Confusión y Métricas de Rendimiento": { total: 0, correct: 0 },
+                "Validación Cruzada y Balanceo de Clases": { total: 0, correct: 0 }
+            };
+
+            quizData.forEach((q, idx) => {
+                let topic = q.topic;
+                topicStats[topic].total++;
+                
+                if (studentResponses[idx] === q.correctIndex) {
+                    totalCorrect++;
+                    topicStats[topic].correct++;
+                }
+            });
+
+            const percent = Math.round((totalCorrect / quizData.length) * 100);
+            
+            const attemptPayload = {
+                timestamp: new Date().toLocaleString(),
+                name: studentInfo.name,
+                score: totalCorrect,
+                percentage: percent,
+                breakdown: topicStats
+            };
+
+            let history = JSON.parse(localStorage.getItem('ude_certamen_history')) || [];
+            history.push(attemptPayload);
+            localStorage.setItem('ude_certamen_history', JSON.stringify(history));
+
+            // -- NUEVO: Integración con Google Sheets --
+            try {
+                let t1 = Math.round((topicStats["Regularización (Lasso/Ridge/Elastic Net)"].correct / topicStats["Regularización (Lasso/Ridge/Elastic Net)"].total) * 100) || 0;
+                let t2 = Math.round((topicStats["Análisis de Componentes Principales (PCA)"].correct / topicStats["Análisis de Componentes Principales (PCA)"].total) * 100) || 0;
+                let t3 = Math.round((topicStats["Regresión Logística Simple y Múltiple"].correct / topicStats["Regresión Logística Simple y Múltiple"].total) * 100) || 0;
+                let t4 = Math.round((topicStats["Regresión Logística Multinomial"].correct / topicStats["Regresión Logística Multinomial"].total) * 100) || 0;
+                let t5 = Math.round((topicStats["Matrices de Confusión y Métricas de Rendimiento"].correct / topicStats["Matrices de Confusión y Métricas de Rendimiento"].total) * 100) || 0;
+                let t6 = Math.round((topicStats["Validación Cruzada y Balanceo de Clases"].correct / topicStats["Validación Cruzada y Balanceo de Clases"].total) * 100) || 0;
+
+                const googleSheetsUrl = "https://script.google.com/macros/s/AKfycbzyY-SKHpPPXtvJjIWxuEQmgTDXSCTVROrJjVJ2IGFkPVegnzAKZAQ6ZQA7qpwitrQJ/exec";
+                const payload = {
+                    name: studentInfo.name,
+                    score: totalCorrect,
+                    percentage: percent,
+                    t1: t1 + "%",
+                    t2: t2 + "%",
+                    t3: t3 + "%",
+                    t4: t4 + "%",
+                    t5: t5 + "%",
+                    t6: t6 + "%"
+                };
+
+                fetch(googleSheetsUrl, {
+                    method: "POST",
+                    mode: "no-cors", // Evita problemas de bloqueo CORS en el navegador
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(payload)
+                }).catch(err => console.error("Error silencioso al guardar en Sheets:", err));
+            } catch (e) {
+                console.error("No se pudo calcular los datos para Sheets:", e);
+            }
+            // -- FIN Integración Google Sheets --
+
+            document.getElementById('res-name').innerText = studentInfo.name;
+            document.getElementById('res-score').innerText = totalCorrect;
+            document.getElementById('res-percent').innerText = percent;
+
+            const statusBox = document.getElementById('general-metrics');
+            const statusText = document.getElementById('res-status-text');
+            
+            if (percent >= 60) {
+                statusBox.className = "metric-box success";
+                statusText.innerText = "Condición: Aprobado";
+                statusText.style.color = "var(--success)";
+            } else {
+                statusBox.className = "metric-box danger";
+                statusText.innerText = "Condición: Reprobado";
+                statusText.style.color = "var(--danger)";
+            }
+
+            const barsContainer = document.getElementById('topic-bars-container');
+            barsContainer.innerHTML = '';
+            let criticalFailures = [];
+            
+            for (let t in topicStats) {
+                let stats = topicStats[t];
+                let tPercent = Math.round((stats.correct / stats.total) * 100) || 0;
+                
+                if (tPercent < 60) {
+                    criticalFailures.push(t);
+                }
+
+                barsContainer.innerHTML += `
+                    <div class="topic-score-row">
+                        <div class="topic-info">
+                            <span>${t}</span>
+                            <span>${stats.correct}/${stats.total} (${tPercent}%)</span>
+                        </div>
+                        <div class="topic-bar-bg">
+                            <div class="topic-bar-fill" style="width: ${tPercent}%; background-color: ${tPercent >= 60 ? 'var(--success)' : 'var(--danger)'};"></div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const feedbackBox = document.getElementById('personalized-feedback');
+            if (criticalFailures.length === 0) {
+                feedbackBox.innerText = "Excelente desempeño analítico. Ha demostrado dominio avanzado en todos los tópicos evaluados.";
+            } else {
+                feedbackBox.innerText = `Se han detectado brechas de comprensión (< 60%) en los siguientes tópicos: [${criticalFailures.join(' | ')}]. Se recomienda revisar el material correspondiente.`;
+            }
+
+            switchView('results-card');
+        }
+
+        function renderTeacherDashboard() {
+            const history = JSON.parse(localStorage.getItem('ude_certamen_history')) || [];
+            const tbody = document.getElementById('teacher-table-body');
+            
+            if (history.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #999;">No hay registros de estudiantes evaluados en este equipo aún.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = '';
+            history.slice().reverse().forEach(att => {
+                let criticals = [];
+                for (let t in att.breakdown) {
+                    let pct = Math.round((att.breakdown[t].correct / att.breakdown[t].total) * 100) || 0;
+                    if (pct < 60) criticals.push(t.split(' ')[0]);
+                }
+                let criticalsText = criticals.length > 0 ? criticals.join(', ') : 'Ninguna';
+
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${att.timestamp}</td>
+                        <td style="font-weight: 600;">${att.name}</td>
+                        <td>${att.score} / 30</td>
+                        <td style="font-weight: bold; color: ${att.percentage >= 60 ? 'var(--success)' : 'var(--danger)'};">${att.percentage}%</td>
+                        <td style="color: #c0392b; font-size: 12px;">${criticalsText}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function exportHistoricalData() {
+            const history = JSON.parse(localStorage.getItem('ude_certamen_history')) || [];
+            if (history.length === 0) {
+                alert('No existen registros históricos para exportar.');
+                return;
+            }
+
+            let csvRows = [];
+            csvRows.push("Fecha,Estudiante,Puntaje_Total,Porcentaje_Rendimiento,Regularizacion_Logro_Pct,PCA_Logro_Pct,Logit_SimpleMultiple_Logro_Pct,Logit_Multinomial_Logro_Pct,Metricas_Confusion_Logro_Pct,ValidacionCruzadaBalanceo_Logro_Pct");
+
+            history.forEach(att => {
+                let t1 = Math.round((att.breakdown["Regularización (Lasso/Ridge/Elastic Net)"].correct / att.breakdown["Regularización (Lasso/Ridge/Elastic Net)"].total) * 100) || 0;
+                let t2 = Math.round((att.breakdown["Análisis de Componentes Principales (PCA)"].correct / att.breakdown["Análisis de Componentes Principales (PCA)"].total) * 100) || 0;
+                let t3 = Math.round((att.breakdown["Regresión Logística Simple y Múltiple"].correct / att.breakdown["Regresión Logística Simple y Múltiple"].total) * 100) || 0;
+                let t4 = Math.round((att.breakdown["Regresión Logística Multinomial"].correct / att.breakdown["Regresión Logística Multinomial"].total) * 100) || 0;
+                let t5 = Math.round((att.breakdown["Matrices de Confusión y Métricas de Rendimiento"].correct / att.breakdown["Matrices de Confusión y Métricas de Rendimiento"].total) * 100) || 0;
+                let t6 = Math.round((att.breakdown["Validación Cruzada y Balanceo de Clases"].correct / att.breakdown["Validación Cruzada y Balanceo de Clases"].total) * 100) || 0;
+
+                let sanitizedName = att.name.replace(/,/g, ' ');
+
+                csvRows.push(`"${att.timestamp}","${sanitizedName}",${att.score},${att.percentage},${t1},${t2},${t3},${t4},${t5},${t6}`);
+            });
+
+            const csvString = "\uFEFF" + csvRows.join("\n");
+            const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Estadisticas_Certamen2_Multivariado_2026.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function clearTeacherStorage() {
+            if (confirm('¿Está seguro de que desea borrar el historial de este equipo?')) {
+                localStorage.removeItem('ude_certamen_history');
+                renderTeacherDashboard();
+            }
+        }
+
+        function restartExam() {
+            switchView('registration-card');
+        }
+
+        function escapeHtml(text) {
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
